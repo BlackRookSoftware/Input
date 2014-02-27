@@ -6,7 +6,7 @@ Copyright (c) 2014 Black Rook Software. All rights reserved.
 
 ### NOTICE
 
-This library requires the use of a third-party libraries. Black Rook Software 
+This library requires the use of third-party libraries. Black Rook Software 
 is not responsible for problems in these libraries.
 
 *This library is currently in **EXPERIMENTAL** status. This library's API
