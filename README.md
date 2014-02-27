@@ -40,3 +40,6 @@ http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 A copy of the LGPL should have been included in this release (LICENSE.txt).
 If it was not, please contact us for a copy, or to notify us of a distribution
 that has not included it. 
+
+JInput is maintained by [Java.Net](https://java.net/projects/jinput/downloads). 
+Contact them for issues regarding JInput. 
