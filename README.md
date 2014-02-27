@@ -17,7 +17,7 @@ may change many times in different ways over the course of its development!*
 Black Rook Commons 2.16.0+  
 [https://github.com/BlackRookSoftware/Common](https://github.com/BlackRookSoftware/Common)
 
-JInput 
+JInput  
 [https://java.net/projects/jinput/downloads](https://java.net/projects/jinput/downloads)
 
 ### Introduction
