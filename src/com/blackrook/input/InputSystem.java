@@ -23,6 +23,10 @@ import com.blackrook.commons.ObjectPair;
 import com.blackrook.commons.hash.HashedQueueMap;
 import com.blackrook.commons.linkedlist.Queue;
 import com.blackrook.commons.list.List;
+import com.blackrook.input.annotation.ComponentBinding;
+import com.blackrook.input.annotation.OnChange;
+import com.blackrook.input.annotation.OnEachChange;
+import com.blackrook.input.annotation.RumbleFactor;
 
 /**
  * The primary input system and controller factory.
@@ -99,8 +103,8 @@ public class InputSystem
 	}
 	
 	/**
-	 * Adds a controller to this system to poll and put the results in
-	 * an object that holds polled information.
+	 * Adds a controller to this system to poll and put the results in an object that holds polled information.
+	 * The provided object must contain {@link ComponentBinding}, {@link OnChange}, {@link OnEachChange}, or {@link RumbleFactor} annotations.
 	 * @param controller the controller to use.
 	 * @param monitor the object to dump polled info into.
 	 */
