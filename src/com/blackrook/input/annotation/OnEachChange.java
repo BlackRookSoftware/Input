@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * calls the method for EVERY annotated component that changes.
  * The method that this is attached to is called DURING the poll, 
  * as fields are set.
- * <p>The method must be public and must have a single parameter: an InputComponent field.
+ * <p>The method must be public and must have three parameters: an InputComponent field, a boolean, and a float field.
  * @author Matthew Tropiano
  */
 @Retention(RetentionPolicy.RUNTIME)
