@@ -108,9 +108,35 @@ public class InputSystem
 	 * @param controller the controller to use.
 	 * @param monitor the object to dump polled info into.
 	 */
-	public void addController(Controller controller, Object monitor)
+	public synchronized void addController(Controller controller, Object monitor)
 	{
-		controllerMap.enqueue(controller, new InputController(controller, monitor));
+		synchronized (controllerMap)
+		{
+			controllerMap.enqueue(controller, new InputController(controller, monitor));
+		}
+	}
+
+	/**
+	 * Removes all monitors for a controller from this system.
+	 * @param controller the controller to unbind all monitors from.
+	 */
+	public synchronized void removeControllerMonitors(Controller controller)
+	{
+		synchronized (controllerMap)
+		{
+			controllerMap.removeUsingKey(controller);
+		}
+	}
+
+	/**
+	 * Clears all controller monitors.
+	 */
+	public synchronized void removeAllControllerMonitors()
+	{
+		synchronized (controllerMap)
+		{
+			controllerMap.clear();
+		}
 	}
 
 	/**
@@ -122,12 +148,15 @@ public class InputSystem
 			listener.beforePoll();
 
 		boolean change = false;
-		for (ObjectPair<Controller, Queue<InputController>> pair : controllerMap)
+		synchronized (controllerMap)
 		{
-			Controller controller = pair.getKey();
-			controller.poll();
-			for (InputController ic : pair.getValue())
-				change = change || ic.poll(controller);
+			for (ObjectPair<Controller, Queue<InputController>> pair : controllerMap)
+			{
+				Controller controller = pair.getKey();
+				controller.poll();
+				for (InputController ic : pair.getValue())
+					change = change || ic.poll(controller);
+			}
 		}
 
 		for (InputSystemListener listener : listeners)
