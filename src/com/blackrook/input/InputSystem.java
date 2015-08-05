@@ -9,6 +9,7 @@ package com.blackrook.input;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +35,8 @@ import com.blackrook.input.annotation.RumbleFactor;
  */
 public class InputSystem
 {
+	/** Controller environment. */
+	private ControllerEnvironment controllerEnvironment;
 	/** List of tracked devices. */
 	private HashedQueueMap<Controller, InputController> controllerMap;
 	/** List of devices hashed by type. */
@@ -50,11 +53,24 @@ public class InputSystem
 	{
 		// suppress most logging for ControllerEnvironment.
 		Logger.getLogger("net.java.games.input.ControllerEnvironment").setLevel(Level.SEVERE);
+
+		// for JInput. Fixes KeyBd+Mouse polling issue (maybe).
+		if (Common.isWindows())
+		{  
+            System.setProperty("jinput.useDefaultPlugin", "false");
+            System.setProperty("net.java.games.input.plugins", "net.java.games.input.DirectInputEnvironmentPlugin");
+        }
 		
 		controllerMap = new HashedQueueMap<Controller, InputController>();
 		controllerTypeMap = new HashedQueueMap<Controller.Type, Controller>();
 		rumblerList = new List<Rumbler>();
 		listeners = new List<InputSystemListener>(2);
+		
+		try {
+			controllerEnvironment = createDefaultEnvironment();
+		} catch (ReflectiveOperationException e) {
+			controllerEnvironment = ControllerEnvironment.getDefaultEnvironment();
+		}
 		
 		refreshControllers();
 	}
@@ -68,8 +84,22 @@ public class InputSystem
 		controllerTypeMap.clear();
 		stopAllRumblers();
 		rumblerList.clear();
-		ControllerEnvironment env = ControllerEnvironment.getDefaultEnvironment();
-		recurseControllers(env.getControllers());
+		recurseControllers(controllerEnvironment.getControllers());
+	}
+	
+	// Input sharker by Florian Enner.
+	private static ControllerEnvironment createDefaultEnvironment() throws ReflectiveOperationException
+	{
+	    // Find constructor (class is package private, so we can't access it directly)
+	    @SuppressWarnings("unchecked")
+		Constructor<ControllerEnvironment> constructor = (Constructor<ControllerEnvironment>)
+			Class.forName("net.java.games.input.DefaultControllerEnvironment").getDeclaredConstructors()[0];
+
+	    // Constructor is package private, so we have to deactivate access control checks
+	    constructor.setAccessible(true);
+
+	    // Create object with default constructor
+	    return constructor.newInstance();
 	}
 	
 	// Recursively adds controllers.
@@ -155,7 +185,10 @@ public class InputSystem
 				Controller controller = pair.getKey();
 				controller.poll();
 				for (InputController ic : pair.getValue())
-					change = change || ic.poll(controller);
+				{
+					boolean p = ic.poll(controller);
+					change = change || p; 
+				}
 			}
 		}
 
