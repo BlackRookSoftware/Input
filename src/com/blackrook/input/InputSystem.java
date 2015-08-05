@@ -186,6 +186,7 @@ public class InputSystem
 				controller.poll();
 				for (InputController ic : pair.getValue())
 				{
+					// avoid logic short-circuit.
 					boolean p = ic.poll(controller);
 					change = change || p; 
 				}
