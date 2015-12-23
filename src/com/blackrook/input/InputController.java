@@ -19,7 +19,8 @@ import com.blackrook.commons.Reflect;
 import com.blackrook.commons.list.List;
 import com.blackrook.input.annotation.ComponentBinding;
 import com.blackrook.input.annotation.OnChange;
-import com.blackrook.input.annotation.OnEachChange;
+import com.blackrook.input.annotation.OnComponentToggle;
+import com.blackrook.input.annotation.OnComponentValue;
 import com.blackrook.input.annotation.RumbleFactor;
 import com.blackrook.input.exception.InputInitializationException;
 
@@ -38,10 +39,12 @@ public class InputController
 	private List<FieldGroup> componentFields;
 	/** Rumbler Field. */
 	private Field rumbleField;
-	/** On Each Change Method. */
-	private Method onEachChangeMethod;
 	/** On Change Method. */
 	private Method onChangeMethod;
+	/** On Component toggle Method. */
+	private Method onComponentToggleMethod;
+	/** On Component Value Method. */
+	private Method onComponentValueMethod;
 	
 	/**
 	 * Creates a new controller.
@@ -54,7 +57,6 @@ public class InputController
 		this.object = object;
 		this.componentFields = new List<FieldGroup>();
 		this.onChangeMethod = null;
-		this.onEachChangeMethod = null;
 		
 		Class<?> clazz = object.getClass();
 		for (Field f : clazz.getFields())
@@ -89,11 +91,17 @@ public class InputController
 					else
 						onChangeMethod = m;
 				}
-				else if (a instanceof OnEachChange)
+				else if (a instanceof OnComponentToggle)
 				{
-					if (!Reflect.matchParameterTypes(m, InputComponent.class, Boolean.TYPE, Float.TYPE))
-						throw new InputInitializationException("The annotation @OnEachChange is not bound to a method with an InputComponent, Boolean, and Float parameter.");
-					onEachChangeMethod = m;
+					if (!Reflect.matchParameterTypes(m, InputComponent.class, Boolean.TYPE))
+						throw new InputInitializationException("The annotation @OnComponentToggle is not bound to a method with an InputComponent and Boolean parameter.");
+					onComponentToggleMethod = m;
+				}
+				else if (a instanceof OnComponentValue)
+				{
+					if (!Reflect.matchParameterTypes(m, InputComponent.class, Float.TYPE))
+						throw new InputInitializationException("The annotation @OnComponentValue is not bound to a method with an InputComponent and Float parameter.");
+					onComponentValueMethod = m;
 				}
 			}
 		}
@@ -113,8 +121,10 @@ public class InputController
 			if (component != null)
 			{
 				boolean s = op.set(object, component.getPollData(), component.isRelative());
-				if (s && onEachChangeMethod != null)
-					Reflect.invokeBlind(onEachChangeMethod, object, op.component, component.getPollData() != 0f, component.getPollData());
+				if (s && onComponentToggleMethod != null)
+					Reflect.invokeBlind(onComponentToggleMethod, object, op.component, component.getPollData() != 0f);
+				if (s && onComponentValueMethod != null)
+					Reflect.invokeBlind(onComponentValueMethod, object, op.component, component.getPollData());
 				change = change || s;
 			}
 		}

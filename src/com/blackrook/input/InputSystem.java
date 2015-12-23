@@ -26,7 +26,7 @@ import com.blackrook.commons.linkedlist.Queue;
 import com.blackrook.commons.list.List;
 import com.blackrook.input.annotation.ComponentBinding;
 import com.blackrook.input.annotation.OnChange;
-import com.blackrook.input.annotation.OnEachChange;
+import com.blackrook.input.annotation.OnComponentValue;
 import com.blackrook.input.annotation.RumbleFactor;
 
 /**
@@ -134,7 +134,7 @@ public class InputSystem
 	
 	/**
 	 * Adds a controller to this system to poll and put the results in an object that holds polled information.
-	 * The provided object must contain {@link ComponentBinding}, {@link OnChange}, {@link OnEachChange}, or {@link RumbleFactor} annotations.
+	 * The provided object must contain {@link ComponentBinding}, {@link OnChange}, {@link OnComponentValue}, or {@link RumbleFactor} annotations.
 	 * @param controller the controller to use.
 	 * @param monitor the object to dump polled info into.
 	 */
@@ -391,10 +391,8 @@ public class InputSystem
 		{
 			out.printf("%s\tRumblers (%d):\n", prefix, c.getRumblers().length);
 			for (Rumbler r : c.getRumblers())
-				out.printf("%s\t\t%s (\"%s\")\n", prefix, 
-						r.getAxisIdentifier(), r.getAxisName());
+				out.printf("%s\t\t%s (\"%s\")\n", prefix, r.getAxisIdentifier(), r.getAxisName());
 		}
 	}
 
-	
 }
